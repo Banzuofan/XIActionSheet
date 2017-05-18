@@ -30,7 +30,8 @@
               @"ActionSheet-Buttons-6",
               @"ActionSheet-Buttons-more than 6",
               @"ActionSheet-Text-short",
-              @"ActionSheet-Text-long"];
+              @"ActionSheet-Text-long",
+              @"Disable blur"];
     
     _contentTable = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     _contentTable.backgroundColor = [UIColor clearColor];
@@ -156,6 +157,19 @@
         XIActionSheet *actionSheet = [[XIActionSheet alloc] initWithTitle:@"Swift is a new programming language"
                                                                   message:@"You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values.You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values.You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values.You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values.You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values,You can define Swift enumerations to store associated values"
                                                         cancelButtonTitle:@"Cancel"];
+        [actionSheet show];
+    }
+    else if(indexPath.row==6){
+        
+        XIActionSheet *actionSheet = [[XIActionSheet alloc] initWithTitle:@"Swift is a new programming language"
+                                                                  message:@"You can define Swift enumerations to store associated values"
+                                                        cancelButtonTitle:@"Cancel"];
+        actionSheet.blurEnabled = NO;
+        for(int i=0;i<4;i++){
+            [actionSheet addDefaultStyleButtonWithTitle:[NSString stringWithFormat:@"button%@",@(i)] handler:^(XIActionSheet *actionSheet, XIActionSheetButtonItem *buttonItem) {
+                [[XIAlertView alertWithTitle:[buttonItem titleForState:UIControlStateNormal] message:nil cancelButtonTitle:@"OK"] show];
+            }];
+        }
         [actionSheet show];
     }
 }

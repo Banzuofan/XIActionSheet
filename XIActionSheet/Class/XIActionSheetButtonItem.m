@@ -34,22 +34,10 @@
     _blurEnabled = blurEnabled;
     
     if(_blurEnabled){
-        if(!_backgroundView){
-            _backgroundView = [[XIBlurView alloc] initWithFrame:self.bounds];
-            _backgroundView.userInteractionEnabled = NO;
-            _backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
-            [self addSubview:_backgroundView];
-        }
-        
-        self.backgroundColor = [UIColor clearColor];
+        [_backgroundView applyBlurEffect];
     }
     else{
-        if(_backgroundView){
-            [_backgroundView removeFromSuperview];
-            _backgroundView = nil;
-        }
-        
-        self.backgroundColor = [UIColor whiteColor];
+        [_backgroundView disableBlurEffect];
     }
 }
 
@@ -57,21 +45,21 @@
 {
     [super setHighlighted:highlighted];
     if(highlighted){
-        if(_backgroundView){
+        if(_blurEnabled){
             _backgroundView.backgroundColor = [UIColor colorWithWhite:0.85 alpha:0.65];
             _backgroundView.blurView.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
         }
         else{
-            self.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1];
+            _backgroundView.backgroundView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:0.99];
         }
     }
     else{
-        if(_backgroundView){
+        if(_blurEnabled){
             _backgroundView.backgroundColor = [UIColor clearColor];
             _backgroundView.blurView.effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
         }
         else{
-            self.backgroundColor = [UIColor whiteColor];
+            _backgroundView.backgroundView.backgroundColor = [UIColor whiteColor];
         }
     }
 }

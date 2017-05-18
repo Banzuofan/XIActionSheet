@@ -54,7 +54,7 @@ CGFloat kButtonHeight = 45;
         dispatch_once(&onceToken, ^{
             if([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0f){
                 kCornerRadius = 12;
-                kButtonHeight = 58;
+                kButtonHeight = 50;
             }
         });
     }
@@ -64,6 +64,7 @@ CGFloat kButtonHeight = 45;
 {
     if(self=[super initWithFrame:frame]){
         _buttons = @[].mutableCopy;
+        _blurEnabled = YES;
         
         _contentView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 0)];
         [self addSubview:_contentView];
@@ -82,7 +83,11 @@ CGFloat kButtonHeight = 45;
         _textScrollView.backgroundColor = [UIColor clearColor];
         [_contentView addSubview:_textScrollView];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(orientationDidChange)
+                                                     name:UIDeviceOrientationDidChangeNotification
+                                                   object:nil];
+        
     }
     return self;
 }
@@ -175,12 +180,32 @@ CGFloat kButtonHeight = 45;
 {
     _actionSheetHeaderView.preferredMaxLayoutWidth = kScreenWidth-kCommonSpace*2;
     
+    [self updateLayouts];
+    
     if(_backgroundView){
         CGRect tmpRect = [self convertRect:_contentView.frame toView:self.superview];
         _backgroundView.cropRect = tmpRect;
     }
+}
+
+- (void)setBlurEnabled:(BOOL)blurEnabled
+{
+    _blurEnabled = blurEnabled;
+
+    if(_textScrollBackgroundView){
+        if(_blurEnabled){
+            [_textScrollBackgroundView applyBlurEffect];
+        }
+        else{
+            [_textScrollBackgroundView disableBlurEffect];
+        }
+    }
     
-    [self updateLayouts];
+    if(_buttons.count>0){
+        for(XIActionSheetButtonItem *item in _buttons){
+            item.blurEnabled = _blurEnabled;
+        }
+    }
 }
 
 - (void)updateLayouts
@@ -205,7 +230,7 @@ CGFloat kButtonHeight = 45;
                 btn.backgroundView.frame = rect;
             }
             else{
-                btn.frame = CGRectMake(0, kButtonLineSpace, contianerWidth, kButtonHeight);
+                btn.frame = CGRectMake(0, 0, contianerWidth, kButtonHeight);
                 
                 CGRect rect = btn.backgroundView.frame;
                 rect.origin.y = -kExpendingHeight+kButtonHeight;
@@ -273,13 +298,6 @@ CGFloat kButtonHeight = 45;
     self.frame = CGRectMake(kCommonSpace, kScreenHeight-CGRectGetHeight(_contentView.frame)-contentViewBottomMargin, kScreenWidth - kCommonSpace*2, CGRectGetHeight(_contentView.frame)+contentViewBottomMargin);
 }
 
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    
-    [self updateLayouts];
-}
-
 - (void)addButtonWithTitle:(NSString *)title
                      style:(XIActionSheetActionStyle)style
                    handler:(void(^)(XIActionSheet *actionSheet, XIActionSheetButtonItem *buttonItem))handler
@@ -287,6 +305,7 @@ CGFloat kButtonHeight = 45;
     if(title && title.length>0){
         
         XIActionSheetButtonItem *button = [[XIActionSheetButtonItem alloc] initWithFrame:CGRectZero];
+        button.blurEnabled = _blurEnabled;
         button.actionSheet = self;
         button.actionHanlder = ^(XIActionSheet *actionSheet, XIActionSheetButtonItem *buttonItem) {
             [actionSheet dismiss];
@@ -350,14 +369,18 @@ CGFloat kButtonHeight = 45;
         self.transform = CGAffineTransformIdentity;
         _backgroundView.alpha = 1;
     } completion:^(BOOL finished) {
-        [self->_textScrollBackgroundView applyBlurEffect];
         
-        for(XIActionSheetButtonItem *elem in _buttons){
-            [elem.backgroundView applyBlurEffect];
+        if(_blurEnabled){
+            [self->_textScrollBackgroundView applyBlurEffect];
+            
+            for(XIActionSheetButtonItem *elem in _buttons){
+                [elem.backgroundView applyBlurEffect];
+            }
         }
         
         if(_backgroundView){
             CGRect tmpRect = [self convertRect:_contentView.frame toView:view];
+            NSLog(@"---%@", NSStringFromCGRect(tmpRect));
             _backgroundView.cropRect = tmpRect;
         }
     }];
@@ -384,9 +407,11 @@ CGFloat kButtonHeight = 45;
     }
     
     if(viewToRemove){
-        [viewToRemove->_textScrollBackgroundView disableBlurEffect];
-        for(XIActionSheetButtonItem *elem in viewToRemove->_buttons){
-            [elem.backgroundView disableBlurEffect];
+        if(viewToRemove.blurEnabled){
+            [viewToRemove->_textScrollBackgroundView disableBlurEffect];
+            for(XIActionSheetButtonItem *elem in viewToRemove->_buttons){
+                [elem.backgroundView disableBlurEffect];
+            }
         }
         if(viewToRemove->_backgroundView){
             viewToRemove->_backgroundView.cropRect = CGRectZero;

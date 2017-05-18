@@ -16,6 +16,8 @@ typedef NS_ENUM(NSInteger, XIActionSheetActionStyle) {
 
 @class XIActionSheetButtonItem;
 @interface XIActionSheet : UIView
+@property(nonatomic, assign) BOOL blurEnabled;// default is YES.
+
 - (instancetype)initWithTitle:(NSString *)title
                       message:(NSString *)message
             cancelButtonTitle:(NSString *)cancelButtonTitle;
