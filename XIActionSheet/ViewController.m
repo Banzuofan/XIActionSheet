@@ -31,7 +31,8 @@
               @"ActionSheet-Buttons-more than 6",
               @"ActionSheet-Text-short",
               @"ActionSheet-Text-long",
-              @"Disable blur"];
+              @"Disable blur",
+              @"Disable blur without message"];
     
     _contentTable = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     _contentTable.backgroundColor = [UIColor clearColor];
@@ -163,6 +164,19 @@
         
         XIActionSheet *actionSheet = [[XIActionSheet alloc] initWithTitle:@"Swift is a new programming language"
                                                                   message:@"You can define Swift enumerations to store associated values"
+                                                        cancelButtonTitle:@"Cancel"];
+        actionSheet.blurEnabled = NO;
+        for(int i=0;i<4;i++){
+            [actionSheet addDefaultStyleButtonWithTitle:[NSString stringWithFormat:@"button%@",@(i)] handler:^(XIActionSheet *actionSheet, XIActionSheetButtonItem *buttonItem) {
+                [[XIAlertView alertWithTitle:[buttonItem titleForState:UIControlStateNormal] message:nil cancelButtonTitle:@"OK"] show];
+            }];
+        }
+        [actionSheet show];
+    }
+    else if(indexPath.row==7){
+        
+        XIActionSheet *actionSheet = [[XIActionSheet alloc] initWithTitle:@""
+                                                                  message:@""
                                                         cancelButtonTitle:@"Cancel"];
         actionSheet.blurEnabled = NO;
         for(int i=0;i<4;i++){

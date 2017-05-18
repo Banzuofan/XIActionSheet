@@ -183,8 +183,13 @@ CGFloat kButtonHeight = 45;
     [self updateLayouts];
     
     if(_backgroundView){
-        CGRect tmpRect = [self convertRect:_contentView.frame toView:self.superview];
-        _backgroundView.cropRect = tmpRect;
+        if(_blurEnabled){
+            CGRect tmpRect = [self convertRect:_contentView.frame toView:self.superview];
+            _backgroundView.cropRect = tmpRect;
+        }
+        else{
+            _backgroundView.cropRect = CGRectZero;
+        }
     }
 }
 
@@ -377,11 +382,14 @@ CGFloat kButtonHeight = 45;
                 [elem.backgroundView applyBlurEffect];
             }
         }
-        
         if(_backgroundView){
-            CGRect tmpRect = [self convertRect:_contentView.frame toView:view];
-            NSLog(@"---%@", NSStringFromCGRect(tmpRect));
-            _backgroundView.cropRect = tmpRect;
+            if(_blurEnabled){
+                CGRect tmpRect = [self convertRect:_contentView.frame toView:view];
+                _backgroundView.cropRect = tmpRect;
+            }
+            else{
+                _backgroundView.cropRect = CGRectZero;
+            }
         }
     }];
 }
